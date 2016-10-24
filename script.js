@@ -10,16 +10,12 @@ var student_array = [];
  * inputIds - id's of the elements that are used to add students
  * @type {string[]}
  */
-var inputIds = ['#studentName', '#course', '#studentGrade'];
+var inputIds = [];
 /**
  * addClicked - Event Handler when user clicks the add button
  */
 function addClicked(){
-    consoleOut('add has been clicked');
-    var name = $(inputIds[0]).val();
-    var course = $(inputIds[1]).val();
-    var grade = $(inputIds[2]).val();
-    addStudent(name, course, grade);
+    addStudent();
     clearAddStudentForm();
 }
 /**
@@ -34,12 +30,15 @@ function cancelClicked(){
  *
  * @return undefined
  */
-function addStudent(theStudent, theCourse, theGrade){
+function addStudent(){
     //consoleOut('addStudent called');
+    var enteredName = $('#studentName').val();
+    var enteredCourse = $('#course').val();
+    var enteredGrade = $('#studentGrade').val();
     var student = {
-        name: theStudent,
-        course: theCourse,
-        grade: theGrade
+        name: enteredName,
+        course: enteredCourse,
+        grade: enteredGrade
     };
     //consoleOut('Student obj ', student);
     student_array.push(student);
@@ -51,9 +50,7 @@ function addStudent(theStudent, theCourse, theGrade){
  */
 function clearAddStudentForm(){
     //consoleOut('Clearing form');
-    for(var i = 0; i < inputIds.length; i++){
-        $(inputIds[i]).val('');
-    }
+    $('input').val('');
 }
 /**
  * calculateAverage - loop through the global student array and calculate average grade and return that value
@@ -88,21 +85,27 @@ function updateStudentList(){
  * into the .student_list body
  * @param {Object} studentObj - student data
  */
-function addStudentToDom(studenObj){
+function addStudentToDom(studentObj){
     var tableRow = $('<tr>');
     var deleteButton = $('<button>',{
         text: 'Delete',
-        class: 'btn btn-danger'
+        class: 'btn btn-danger delete'
     });
     var deleteTd = $('<td>').append(deleteButton);
-    for(var x in studenObj){
+    for(var x in studentObj){
         var tableData = $('<td>',{
-            text: studenObj[x]
+            text: studentObj[x]
         });
         tableRow.append(tableData);
     }
     tableRow.append(deleteTd);
     $('tbody').append(tableRow);
+}
+/**
+ * removeStudent = removes student data from student_array
+ */
+function removeStudent(){
+    consoleOut('In removeStudent');
 }
 /**
  * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
@@ -117,6 +120,11 @@ function reset(){
 $(document).ready(function(){
     reset();
     updateStudentList();
+    $('tbody').on('click','.delete', function(){
+       removeStudent();
+        var self = $(this).parent();
+        consoleOut('remove button clicked. Parent: ', self, ' ', this);
+    });
 });
 
 /**
@@ -126,5 +134,5 @@ $(document).ready(function(){
  * @param someVariable - variable to check in console for expected values
  */
 function consoleOut(msg, someVariable){
-  console.log(msg, someVariable);
+    console.log(msg, someVariable);
 }
