@@ -5,7 +5,7 @@
  * student_array - global array to hold student objects
  * @type {Array}
  */
-var student_array = [];
+var student_array = [{name:'kevin',course:'ajax',grade:'65'}];
 /**
  * inputIds - id's of the elements that are used to add students
  * @type {string[]}
@@ -58,14 +58,16 @@ function clearAddStudentForm(){
 function calculateAverage(){
     var sum = null;
     for(var i = 0; i < student_array.length; i++){
-        sum += student_array[i]['grade'];
+        sum += parseFloat(student_array[i]['grade']);
+    }
+    if(student_array.length===0){
+        return 0;
     }
     return Math.floor(sum/student_array.length);
 }
 /**
  * updateData - centralized function to update the average and call student list update
  */
-//todo call update data
 function updateData(){
     updateStudentList();
     var average = calculateAverage();
@@ -77,6 +79,7 @@ function updateData(){
 function updateStudentList(){
     $('tbody').html('');
     for(var i = 0; i < student_array.length; i++){
+        inputIds.push(i);
         addStudentToDom(student_array[i]);
     }
 }//todo correct?
@@ -89,7 +92,8 @@ function addStudentToDom(studentObj){
     var tableRow = $('<tr>');
     var deleteButton = $('<button>',{
         text: 'Delete',
-        class: 'btn btn-danger delete'
+        class: 'btn btn-danger delete',
+        id: inputIds[inputIds.length-1]
     });
     var deleteTd = $('<td>').append(deleteButton);
     for(var x in studentObj){
@@ -103,16 +107,19 @@ function addStudentToDom(studentObj){
 }
 /**
  * removeStudent = removes student data from student_array
+ * @param {number} index - Id of button of student object
  */
-function removeStudent(){
-    consoleOut('In removeStudent');
-    //todo remove associated student object from student array
+function removeStudent(index){
+    var x = student_array.splice(index, 1);
+    consoleOut('Removing: ', x);
+    updateData();
 }
 /**
  * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
  */
 function reset(){
     clearAddStudentForm();
+    updateData();
     //todo needs adjustment
 }
 
@@ -121,9 +128,9 @@ function reset(){
  */
 $(document).ready(function(){
     reset();
-    updateStudentList();
     $('tbody').on('click','.delete', function(){
-        removeStudent();
+        var buttonId = $(this).attr('id');
+        removeStudent(buttonId);
         $(this).parent().parent().remove();
     });
 });
