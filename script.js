@@ -42,8 +42,7 @@ function addStudent(){
     };
     //consoleOut('Student obj ', student);
     student_array.push(student);
-    //consoleOut('Student Array after push in add ', student_array)
-    addStudentToDom(student);
+    updateData();
 }
 /**
  * clearAddStudentForm - clears out the form values based on inputIds variable
@@ -76,10 +75,11 @@ function updateData(){
  * updateStudentList - loops through global student array and appends each objects data into the student-list-container > list-body
  */
 function updateStudentList(){
+    $('tbody').html('');
     for(var i = 0; i < student_array.length; i++){
-    addStudentToDom(student_array[i]);
+        addStudentToDom(student_array[i]);
     }
-}
+}//todo correct?
 /**
  * addStudentToDom - take in a student object, create html elements from the values and then append the elements
  * into the .student_list body
@@ -106,12 +106,14 @@ function addStudentToDom(studentObj){
  */
 function removeStudent(){
     consoleOut('In removeStudent');
+    //todo remove associated student object from student array
 }
 /**
  * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
  */
 function reset(){
     clearAddStudentForm();
+    //todo needs adjustment
 }
 
 /**
@@ -121,9 +123,8 @@ $(document).ready(function(){
     reset();
     updateStudentList();
     $('tbody').on('click','.delete', function(){
-       removeStudent();
-        var self = $(this).parent();
-        consoleOut('remove button clicked. Parent: ', self, ' ', this);
+        removeStudent();
+        $(this).parent().parent().remove();
     });
 });
 
