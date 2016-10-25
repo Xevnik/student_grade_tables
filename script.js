@@ -82,7 +82,6 @@ function updateStudentList(){
         inputIds.push(i);
         addStudentToDom(student_array[i]);
     }
-}//todo correct?
 /**
  * addStudentToDom - take in a student object, create html elements from the values and then append the elements
  * into the .student_list body
@@ -126,15 +125,16 @@ function reset(){
 /**
  * Listen for the document to load and reset the data to the initial state
  */
-$(document).ready(function(){
+$(document).ready(documentReady);
+
+function documentReady(){
     reset();
     $('tbody').on('click','.delete', function(){
         var buttonId = $(this).attr('id');
         removeStudent(buttonId);
         $(this).parent().parent().remove();
     });
-});
-
+}
 /**
  * console log message and any variables passed
  * allows commenting out one console.log
