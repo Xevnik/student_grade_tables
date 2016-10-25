@@ -10,7 +10,7 @@ var student_array = [{name:'kevin',course:'ajax',grade:'65'}];
  * inputIds - id's of the elements that are used to add students
  * @type {string[]}
  */
-var inputIds = [];
+var inputIds = null;
 /**
  * addClicked - Event Handler when user clicks the add button
  */
@@ -76,12 +76,13 @@ function updateData(){
 /**
  * updateStudentList - loops through global student array and appends each objects data into the student-list-container > list-body
  */
-function updateStudentList(){
+function updateStudentList() {
     $('tbody').html('');
-    for(var i = 0; i < student_array.length; i++){
-        inputIds.push(i);
+    for (var i = 0; i < student_array.length; i++) {
+        inputIds = i;
         addStudentToDom(student_array[i]);
     }
+}
 /**
  * addStudentToDom - take in a student object, create html elements from the values and then append the elements
  * into the .student_list body
@@ -92,7 +93,7 @@ function addStudentToDom(studentObj){
     var deleteButton = $('<button>',{
         text: 'Delete',
         class: 'btn btn-danger delete',
-        id: inputIds[inputIds.length-1]
+        id: inputIds
     });
     var deleteTd = $('<td>').append(deleteButton);
     for(var x in studentObj){
@@ -132,7 +133,7 @@ function documentReady(){
     $('tbody').on('click','.delete', function(){
         var buttonId = $(this).attr('id');
         removeStudent(buttonId);
-        $(this).parent().parent().remove();
+        //$(this).parent().parent().remove();
     });
 }
 /**
