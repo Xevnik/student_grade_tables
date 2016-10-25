@@ -5,7 +5,7 @@
  * student_array - global array to hold student objects
  * @type {Array}
  */
-var student_array = [{name:'kevin',course:'ajax',grade:'65'}];
+var student_array = [];
 /**
  * inputIds - id's of the elements that are used to add students
  * @type {string[]}
@@ -24,6 +24,27 @@ function addClicked(){
 function cancelClicked(){
     consoleOut('cancel has been clicked');
     clearAddStudentForm();
+}
+/**
+ * Event handler when clicked makes ajax call to server to get student data
+ */
+function getFromServer(){
+    $.ajax({
+        dataType: 'JSON',
+        data: {api_key: 'Mmkxjt1mxT'},
+        method: 'POST',
+        url: 'https://s-apis.learningfuze.com/sgt/get',
+        success: function(response){
+            if(response.success){
+                console.log('success!!');
+                //console.log('Data', response.data);
+                student_array = student_array.concat(response.data);
+                updateData();
+            }else{
+
+            }
+        }
+    });
 }
 /**
  * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
@@ -89,21 +110,18 @@ function updateStudentList() {
  * @param {Object} studentObj - student data
  */
 function addStudentToDom(studentObj){
-    var tableRow = $('<tr>');
-    var deleteButton = $('<button>',{
+    var $tableRow = $('<tr>');
+    var $deleteButton = $('<button>',{
         text: 'Delete',
         class: 'btn btn-danger delete',
         id: inputIds
     });
-    var deleteTd = $('<td>').append(deleteButton);
-    for(var x in studentObj){
-        var tableData = $('<td>',{
-            text: studentObj[x]
-        });
-        tableRow.append(tableData);
-    }
-    tableRow.append(deleteTd);
-    $('tbody').append(tableRow);
+    var $deleteTd = $('<td>').append($deleteButton);
+    var $name = $('<td>').text(studentObj.name);
+    var $course = $('<td>').text(studentObj.course);
+    var $grade = $('<td>').text(studentObj.grade);
+    $tableRow.append($name, $course, $grade, $deleteTd);
+    $('tbody').append($tableRow);
 }
 /**
  * removeStudent = removes student data from student_array
