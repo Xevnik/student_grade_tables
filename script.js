@@ -10,7 +10,7 @@ var student_array = [];
  * inputIds - id's of the elements that are used to add students
  * @type {string[]}
  */
-var inputIds = null;
+var inputIds = [];
 /**
  * addClicked - Event Handler when user clicks the add button
  */
@@ -26,27 +26,6 @@ function cancelClicked(){
     clearAddStudentForm();
 }
 /**
- * Event handler when clicked makes ajax call to server to get student data
- */
-function getFromServer(){
-    $.ajax({
-        dataType: 'JSON',
-        data: {api_key: 'Mmkxjt1mxT'},
-        method: 'POST',
-        url: 'https://s-apis.learningfuze.com/sgt/get',
-        success: function(response){
-            if(response.success){
-                console.log('success!!');
-                //console.log('Data', response.data);
-                student_array = student_array.concat(response.data);
-                updateData();
-            }else{
-
-            }
-        }
-    });
-}
-/**
  * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
  *
  * @return undefined
@@ -56,6 +35,10 @@ function addStudent(){
     var enteredName = $('#studentName').val();
     var enteredCourse = $('#course').val();
     var enteredGrade = $('#studentGrade').val();
+    if(enteredName== '' || enteredCourse== '' || enteredGrade== ''){
+        //disallow empty fields submits
+        return;
+    }
     var student = {
         name: enteredName,
         course: enteredCourse,
@@ -100,7 +83,7 @@ function updateData(){
 function updateStudentList() {
     $('tbody').html('');
     for (var i = 0; i < student_array.length; i++) {
-        inputIds = i;
+        inputIds.push(i);
         addStudentToDom(student_array[i]);
     }
 }
@@ -114,7 +97,7 @@ function addStudentToDom(studentObj){
     var $deleteButton = $('<button>',{
         text: 'Delete',
         class: 'btn btn-danger delete',
-        id: inputIds
+        id: inputIds[inputIds.length-1]
     });
     var $deleteTd = $('<td>').append($deleteButton);
     var $name = $('<td>').text(studentObj.name);
@@ -128,7 +111,9 @@ function addStudentToDom(studentObj){
  * @param {number} index - Id of button of student object
  */
 function removeStudent(index){
+    consoleOut('Index of object to be removed', index);
     var x = student_array.splice(index, 1);
+    inputIds.splice(index, 1);
     consoleOut('Removing: ', x);
     updateData();
 }
@@ -136,9 +121,26 @@ function removeStudent(index){
  * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
  */
 function reset(){
-    clearAddStudentForm();
-    updateData();
-    //todo needs adjustment
+    student_array = [];
+    inputIds = [];
+    $.ajax({
+        dataType: 'JSON',
+        data: {api_key: 'Mmkxjt1mxT'},
+        method: 'POST',
+        url: 'https://s-apis.learningfuze.com/sgt/get',
+        success: function(response){
+            if(response.success){
+                consoleOut('success!!');
+                //consoleOut('Data', response.data);
+                //student_array = student_array.concat(response.data);
+                for(var i = 0; i < response.data.length; i++){
+                    student_array.push(response.data[i]);
+                }
+                updateData();
+            }
+        }
+    });
+    //todo record IDs to global
 }
 
 /**
@@ -151,7 +153,6 @@ function documentReady(){
     $('tbody').on('click','.delete', function(){
         var buttonId = $(this).attr('id');
         removeStudent(buttonId);
-        //$(this).parent().parent().remove();
     });
 }
 /**
