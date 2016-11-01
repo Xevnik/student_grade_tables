@@ -22,7 +22,7 @@ function addClicked(){
  * cancelClicked - Event Handler when user clicks the cancel button, should clear out student form
  */
 function cancelClicked(){
-    consoleOut('cancel has been clicked');
+    //consoleOut('cancel has been clicked');
     clearAddStudentForm();
 }
 /**
@@ -45,8 +45,29 @@ function addStudent(){
         grade: enteredGrade
     };
     //consoleOut('Student obj ', student);
-    student_array.push(student);
-    updateData();
+    addStudentToDB(student);
+}
+function addStudentToDB(newStudent){
+    var dataToSend = newStudent;
+    dataToSend['api_key'] = 'Mmkxjt1mxT';
+    $.ajax({
+        method: 'POST',
+        url: 'https://s-apis.learningfuze.com/sgt/create',
+        data: dataToSend,
+        dataType: 'JSON',
+        success: function(response){
+            consoleOut(response.success, response.new_id);
+            if(response.success){
+                //adds DB generated Id to student object
+                newStudent['id'] = response.new_id;
+                student_array.push(newStudent);
+                updateData();
+            }else{
+                alert('Failed to add');
+                console.log(response['errors']);
+            }
+        }
+    });
 }
 /**
  * clearAddStudentForm - clears out the form values based on inputIds variable
@@ -82,9 +103,8 @@ function updateData(){
  */
 function updateStudentList() {
     $('tbody').html('');
-    for (var i = 0; i < student_array.length; i++) {
-        inputIds.push(i);
-        addStudentToDom(student_array[i]);
+    for (var i = 0; i < student_array.length; i++){
+        addStudentToDom(student_array[i], i);
     }
 }
 /**
@@ -92,13 +112,15 @@ function updateStudentList() {
  * into the .student_list body
  * @param {Object} studentObj - student data
  */
-function addStudentToDom(studentObj){
+function addStudentToDom(studentObj, index){
     var $tableRow = $('<tr>');
     var $deleteButton = $('<button>',{
         text: 'Delete',
         class: 'btn btn-danger delete',
-        id: inputIds[inputIds.length-1]
+        id: index
     });
+    //keeps DB id with data location in the DOM
+    inputIds[index] = studentObj['id'];
     var $deleteTd = $('<td>').append($deleteButton);
     var $name = $('<td>').text(studentObj.name);
     var $course = $('<td>').text(studentObj.course);
@@ -108,14 +130,32 @@ function addStudentToDom(studentObj){
 }
 /**
  * removeStudent = removes student data from student_array
- * @param {number} index - Id of button of student object
+ * @param {number} index - index location of ID of student data on DB
  */
 function removeStudent(index){
-    consoleOut('Index of object to be removed', index);
-    var x = student_array.splice(index, 1);
-    inputIds.splice(index, 1);
-    consoleOut('Removing: ', x);
-    updateData();
+    //create object to send to DB
+    consoleOut('Index of ID to be removed', index);
+    var dataToDelete = {
+        api_key: 'Mmkxjt1mxT',
+        student_id: inputIds[index]
+    };
+    $.ajax({
+        dataType: 'JSON',
+        data: dataToDelete,
+        url: 'https://s-apis.learningfuze.com/sgt/delete',
+        method: 'POST',
+        success: function(response){
+            if(response.success) {
+                var x = student_array.splice(index, 1);
+                inputIds.splice(index, 1);
+                consoleOut('Removing: ', x);
+                updateData();
+            }else{
+                alert('Failed to delete');
+                console.log(response['errors']);
+            }
+        }
+    })
 }
 /**
  * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
@@ -131,16 +171,18 @@ function reset(){
         success: function(response){
             if(response.success){
                 consoleOut('success!!');
-                //consoleOut('Data', response.data);
-                //student_array = student_array.concat(response.data);
-                for(var i = 0; i < response.data.length; i++){
-                    student_array.push(response.data[i]);
+                var arrayFromDB = response.data;
+                consoleOut('From DB', arrayFromDB);
+                for(var i = 0; i < arrayFromDB.length; i++){
+                    student_array.push(arrayFromDB[i]);
                 }
                 updateData();
+            }else{
+                alert('Failed to get data');
+                console.log(response.errors);
             }
         }
     });
-    //todo record IDs to global
 }
 
 /**
@@ -163,4 +205,8 @@ function documentReady(){
  */
 function consoleOut(msg, someVariable){
     console.log(msg, someVariable);
+}
+
+function serverAccessFailed(){
+
 }
