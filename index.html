@@ -54,7 +54,13 @@
                 <th>Operations</th>
             </tr>
             </thead>
-            <tbody ng-repeat="">
+            <tbody>
+            <tr ng-repeat="student in sc.studentList">
+                <td>{{ student.name }}</td>
+                <td>{{ student.course }}</td>
+                <td>{{ student.grade }}</td>
+                <td><button class="btn btn-danger">Delete</button></td>
+            </tr>
             </tbody>
         </table>
     </div>
