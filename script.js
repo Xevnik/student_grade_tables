@@ -167,7 +167,7 @@ function reset(){
         dataType: 'JSON',
         data: {api_key: 'Mmkxjt1mxT'},
         method: 'POST',
-        url: 'https://s-apis.learningfuze.com/sgt/get',
+        url: 'read.php',
         success: function(response){
             if(response.success){
                 consoleOut('success!!');
