@@ -52,7 +52,7 @@ function addStudentToDB(newStudent){
     dataToSend['api_key'] = 'Mmkxjt1mxT';
     $.ajax({
         method: 'POST',
-        url: 'https://s-apis.learningfuze.com/sgt/create',
+        url: 'add.php',
         data: dataToSend,
         dataType: 'JSON',
         success: function(response){
