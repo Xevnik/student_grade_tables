@@ -34,10 +34,6 @@ app.provider('studentData', function(){
     };
 });
 
-app.config(function(studentDataProvider){
-    studentDataProvider.apiUrl = 'https://s-apis.learningfuze.com/sgt/get';
-    studentDataProvider.apiKey = 'Mmkxjt1mxT';
-});
 
 app.controller('sgtController', function($log, $window, studentData){
     var scScope = this;
