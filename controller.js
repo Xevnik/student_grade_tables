@@ -35,11 +35,11 @@ app.provider('studentData', function(){
 });
 
 
-app.controller('sgtController', function($log, $window, studentData){
+app.controller('sgtController', function($log, studentData){
     var scScope = this;
     scScope.student = {};
     scScope.studentList = [];
-    $window.onload = function() {
+    var getData = function() {
         $log.log('In update');
         studentData.callApi()
             .then(
@@ -59,4 +59,7 @@ app.controller('sgtController', function($log, $window, studentData){
     scScope.cancelClicked = function(){
         scScope.student = {};
     };
+
+    //initialize
+    getData();
 });
