@@ -9,7 +9,7 @@ app.provider('studentData', function(){
     dataScope.apiKey = '';
     dataScope.$get = function($http, $q, $log){
         return {
-            callApi: function(){
+            getStudents: function(){
                 var data = 'api_key=' + dataScope.apiKey;
                 var defer = $q.defer();
                 $http({
@@ -29,7 +29,9 @@ app.provider('studentData', function(){
                             defer.reject(err);
                         });
                 return defer.promise;
-            }
+            },
+            addStudents: function(){},
+            deleteStudents: function(){},
         }
     };
 });
@@ -41,11 +43,12 @@ app.controller('sgtController', function($log, studentData){
     scScope.studentList = [];
     var getData = function() {
         $log.log('In update');
-        studentData.callApi()
+        studentData.getStudents()
             .then(
                 function (response) {
                     $log.info('Success: ', response);
                     scScope.studentList = response.data.data;
+                    $log.info(scScope.studentList);
                 },
                 function (error) {
                     $log.warn('Failure: ', error);
@@ -54,7 +57,12 @@ app.controller('sgtController', function($log, studentData){
     scScope.addClicked = function(){
         //this.studentList.push(this.student);
         $log.log(this.studentList);
-        scScope.student = {};
+        scScope.student = {
+            name: scScope.student.name,
+            course: scScope.student.course,
+            grade: scScope.student.grade
+        };
+        $log.log(scScope.student);
     };
     scScope.cancelClicked = function(){
         scScope.student = {};
