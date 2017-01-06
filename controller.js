@@ -29,7 +29,7 @@ app.provider('studentData', function(){
                         });
                 return defer.promise;
             },
-            addStudents: function(studentData){
+            addStudent: function(studentData){
                 var data = studentData;
                 data['api_key'] = dataScope.apiKey;
                 var defer = $q.defer();
@@ -51,13 +51,15 @@ app.provider('studentData', function(){
                         });
                 return defer.promise;
             },
-            deleteStudent: function(studentData){
-                var data = studentData;
-                data['api_key'] = dataScope.apiKey;
+            deleteStudent: function(studentID){
+                var data = {
+                    student_id: studentID,
+                    api_key: dataScope.apiKey
+                };
                 var defer = $q.defer();
                 $http({
                     method: 'POST',
-                    url: dataScope.apiUrl + 'create',
+                    url: dataScope.apiUrl + 'delete',
                     dataType: 'JSON',
                     data: $.param(data),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -82,6 +84,10 @@ app.controller('sgtController', function($log, studentData){
     var scScope = this;
     scScope.student = {};
     scScope.studentList = [];
+    scScope.GPA = 0;
+    /**
+     * Updates student list with list from DB
+     */
     var getData = function() {
         $log.log('In update');
         studentData.getStudents()
@@ -89,12 +95,25 @@ app.controller('sgtController', function($log, studentData){
                 function (response) {
                     $log.info('Success: ', response);
                     scScope.studentList = response.data.data;
-                    $log.info(scScope.studentList);
+                    calculateGPA(scScope.studentList);
                 },
                 function (error) {
                     $log.error('Failure: ', error);
                 });
     };
+    /**
+     * calculate GPA for collective students
+     * @param students [obj- list of student to calculate GPA
+     */
+    var calculateGPA = function(students){
+        var totalGrades = students.reduce(
+            (total, student) => {return total + student.grade;}, 0
+        );
+        scScope.GPA = totalGrades/students.length;
+    };
+    /**
+     * add student to DB and update view
+     */
     scScope.addClicked = function(){
         //this.studentList.push(this.student);
         //$log.log(this.studentList);
@@ -103,17 +122,39 @@ app.controller('sgtController', function($log, studentData){
             course: scScope.student.course,
             grade: scScope.student.grade
         };
-        studentData.addStudent(student);
+        studentData.addStudent(scScope. student).then(
+            function(resp){
+                $log.log(resp);
+                getData();
+            },
+            function(error){
+                $log.error('Could not add student: ', error);
+            });
         //$log.log(scScope.student);
         scScope.student = {};
     };
+    /**
+     * Clear data in form
+     */
     scScope.cancelClicked = function(){
         scScope.student = {};
     };
+    /**
+     * Remove student from DB
+     * @param studentToRemove
+     */
     scScope.deleteStudent = function(studentToRemove){
-        $log.info('Delete function called');
         $log.log(studentToRemove);
+        studentData.deleteStudent(studentToRemove.id).then(
+            function(resp){
+                $log.log(resp);
+                getData();
+            },
+            function(err){
+                $log.error('Failed, err');
+            });
     };
+
 
     //initialize
     getData();
