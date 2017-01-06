@@ -51,7 +51,28 @@ app.provider('studentData', function(){
                         });
                 return defer.promise;
             },
-            deleteStudents: function(){},
+            deleteStudent: function(studentData){
+                var data = studentData;
+                data['api_key'] = dataScope.apiKey;
+                var defer = $q.defer();
+                $http({
+                    method: 'POST',
+                    url: dataScope.apiUrl + 'create',
+                    dataType: 'JSON',
+                    data: $.param(data),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                })
+                    .then(
+                        function(resp){
+                            $log.info('success');
+                            defer.resolve(resp);
+                        },
+                        function(err){
+                            $log.warn('error');
+                            defer.reject(err);
+                        });
+                return defer.promise;
+            },
         }
     };
 });
@@ -82,12 +103,16 @@ app.controller('sgtController', function($log, studentData){
             course: scScope.student.course,
             grade: scScope.student.grade
         };
-
+        studentData.addStudent(student);
         //$log.log(scScope.student);
         scScope.student = {};
     };
     scScope.cancelClicked = function(){
         scScope.student = {};
+    };
+    scScope.deleteStudent = function(studentToRemove){
+        $log.info('Delete function called');
+        $log.log(studentToRemove);
     };
 
     //initialize
