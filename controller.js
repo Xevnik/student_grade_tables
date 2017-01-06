@@ -10,13 +10,34 @@ app.provider('studentData', function(){
     dataScope.$get = function($http, $q, $log){
         return {
             getStudents: function(){
-                var data = 'api_key=' + dataScope.apiKey;
+                var defer = $q.defer();
+                $http({
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    method: 'POST',
+                    url: dataScope.apiUrl + 'get',
+                    dataType: 'JSON',
+                    data: $.param({api_key: dataScope.apiKey})
+                })
+                    .then(
+                        function(resp){
+                            $log.info('success');
+                            defer.resolve(resp);
+                        },
+                        function(err){
+                            $log.warn('error');
+                            defer.reject(err);
+                        });
+                return defer.promise;
+            },
+            addStudents: function(studentData){
+                var data = studentData;
+                data['api_key'] = dataScope.apiKey;
                 var defer = $q.defer();
                 $http({
                     method: 'POST',
-                    url: dataScope.apiUrl,
+                    url: dataScope.apiUrl + 'create',
                     dataType: 'JSON',
-                    data: data,
+                    data: $.param(data),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 })
                     .then(
@@ -30,7 +51,6 @@ app.provider('studentData', function(){
                         });
                 return defer.promise;
             },
-            addStudents: function(){},
             deleteStudents: function(){},
         }
     };
@@ -51,18 +71,20 @@ app.controller('sgtController', function($log, studentData){
                     $log.info(scScope.studentList);
                 },
                 function (error) {
-                    $log.warn('Failure: ', error);
+                    $log.error('Failure: ', error);
                 });
     };
     scScope.addClicked = function(){
         //this.studentList.push(this.student);
-        $log.log(this.studentList);
+        //$log.log(this.studentList);
         scScope.student = {
             name: scScope.student.name,
             course: scScope.student.course,
             grade: scScope.student.grade
         };
-        $log.log(scScope.student);
+
+        //$log.log(scScope.student);
+        scScope.student = {};
     };
     scScope.cancelClicked = function(){
         scScope.student = {};
