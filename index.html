@@ -8,6 +8,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
     <script src="controller.js"></script>
     <script src="config.js"></script>
+
+    <style>
+        .clickable{
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 <div class="container" ng-controller="sgtController as sc">
@@ -18,7 +24,7 @@
         </h1>
         <!-- only show this element when the user gets to a mobile version -->
         <h3 class="visible-xs">Student Grade Table
-            <small class="pull-right">Grade Average : <span class="avgGrade label label-default" ng-model="sc.GPA">{{ sc.GPA }}</span></small>
+            <small class="pull-right">Grade Average : <span class="avgGrade label label-default" ng-model="sc.GPA">{{ sc.GPA | number: 2}}</span></small>
         </h3>
     </div>
     <div class="student-add-form col-md-3 col-md-push-9">
@@ -50,14 +56,14 @@
         <table class="student-list table">
             <thead>
             <tr>
-                <th>Student Name</th>
-                <th>Student Course</th>
-                <th>Student Grade</th>
+                <th class="clickable" ng-click="sc.setOrder('name')">Student Name <span class="glyphicon glyphicon-sort-by-alphabet"></span></th>
+                <th class="clickable" ng-click="sc.setOrder('course')">Student Course <span class="glyphicon glyphicon-sort-by-alphabet"></th>
+                <th class="clickable" ng-click="sc.setOrder('grade')">Student Grade <span class="glyphicon glyphicon-sort-by-order"></th>
                 <th>Operations</th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="student in sc.studentList">
+            <tr ng-repeat="student in sc.studentList | orderBy: sc.order">
                 <td>{{ student.name }}</td>
                 <td>{{ student.course }}</td>
                 <td>{{ student.grade }}</td>

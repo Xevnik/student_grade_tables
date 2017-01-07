@@ -85,6 +85,7 @@ app.controller('sgtController', function($log, studentData){
     scScope.student = {};
     scScope.studentList = [];
     scScope.GPA = 0;
+    scScope.order = null;
     /**
      * Updates student list with list from DB
      */
@@ -136,14 +137,14 @@ app.controller('sgtController', function($log, studentData){
     /**
      * Clear data in form
      */
-    scScope.cancelClicked = function(){
+    scScope.cancelClicked = function (){
         scScope.student = {};
     };
     /**
      * Remove student from DB
      * @param studentToRemove
      */
-    scScope.deleteStudent = function(studentToRemove){
+    scScope.deleteStudent = function (studentToRemove){
         $log.log(studentToRemove);
         studentData.deleteStudent(studentToRemove.id).then(
             function(resp){
@@ -155,7 +156,9 @@ app.controller('sgtController', function($log, studentData){
             });
     };
 
-
+    scScope.setOrder = function (orderBy) {
+        scScope.order = (scScope.order===orderBy)?'-'+orderBy:orderBy;
+    };
     //initialize
     getData();
 });
