@@ -16,6 +16,9 @@
         .clickable{
             cursor: pointer;
         }
+        #add-cancel-btn{
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -52,21 +55,40 @@
             <input ng-model='sc.student.grade' type="number" class="form-control" name="studentGrade" id="studentGrade"
                    placeholder="Student Grade">
         </div>
-        <button type="button" class="btn btn-success" ng-click="sc.addClicked()">Add</button>
-        <button type="button" class="btn btn-default" ng-click="sc.cancelClicked()">Cancel</button>
+        <div id="add-cancel-btn">
+            <button type="button" class="btn btn-success" ng-click="sc.addClicked()">Add</button>
+            <button type="button" class="btn btn-default" ng-click="sc.cancelClicked()">Cancel</button>
+        </div>
+        <!--Search Bar-->
+        <div class="input-group form-group">
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-search"></span>
+            </span>
+            <input ng-model='searchWord' type="text" class="form-control" name="search" id="search" placeholder="Search">
+        </div>
+        <!--Search Bar End-->
     </div>
     <div class="student-list-container col-md-9 col-md-pull-3">
         <table class="student-list table">
             <thead>
             <tr>
-                <th class="clickable" ng-click="sc.setOrder('name')">Student Name <span class="glyphicon glyphicon-sort-by-alphabet"></span></th>
-                <th class="clickable" ng-click="sc.setOrder('course')">Student Course <span class="glyphicon glyphicon-sort-by-alphabet"></th>
-                <th class="clickable" ng-click="sc.setOrder('grade')">Student Grade <span class="glyphicon glyphicon-sort-by-order"></th>
+                <th class="clickable" ng-click="sc.setOrder('name')">Student Name
+                    <span class="glyphicon"
+                          ng-class="(sc.order==='name') ? 'glyphicon-sort-by-alphabet-alt':'glyphicon-sort-by-alphabet' "></span>
+                </th>
+                <th class="clickable" ng-click="sc.setOrder('course')">Student Course
+                    <span class="glyphicon"
+                          ng-class="(sc.order==='course') ? 'glyphicon-sort-by-alphabet-alt' :'glyphicon-sort-by-alphabet' "></span>
+                </th>
+                <th class="clickable" ng-click="sc.setOrder('grade')">Student Grade
+                    <span class="glyphicon"
+                          ng-class="(sc.order==='grade') ? 'glyphicon-sort-by-order-alt':'glyphicon-sort-by-order' "></span>
+                </th>
                 <th>Operations</th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="student in sc.studentList | orderBy: sc.order">
+            <tr ng-repeat="student in sc.studentList | orderBy: sc.order | filter: searchWord">
                 <td>{{ student.name }}</td>
                 <td>{{ student.course }}</td>
                 <td><span ng-class="sc.qualifyGrade(student.grade)">{{ student.grade }}</span></td>
