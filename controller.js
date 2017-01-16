@@ -41,7 +41,7 @@ app.controller('sgtController', function($log, $firebaseArray){
      * @param students [obj- list of student to calculate GPA
      */
     var calculateGPA = function(students){
-        $log.log('Calculating:', students);
+        //$log.log('Calculating:', students);
         var totalGrades = students.reduce(
             (total, student) => { return total + parseInt(student.grade); }, 0
         );
