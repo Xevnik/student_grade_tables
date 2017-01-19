@@ -19,5 +19,6 @@ Version 2.0 adds more CRUD functionality. Create and delete functionality is now
 ##Version Angular 
 ####Description
 This version aims to convert this application to use Angular controller and services to provide function to the table. 
-- (coming soon) Will also be using AngularFire to provide database functionality.
+- Using AngularFire to provide database functionality.
+- To do: separate into service
 
