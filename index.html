@@ -2,16 +2,22 @@
 <html ng-app="sgtApp">
 <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <meta name="viewport" content="initial-scale=1, user-scalable=no">
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.js"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>
+    <!-- AngularFire -->
+    <script src="https://cdn.firebase.com/libs/angularfire/2.2.0/angularfire.js"></script>
     <script src="controller.js"></script>
-    <script src="config.js"></script>
 
     <style>
         .clickable{
             cursor: pointer;
+        }
+        #add-cancel-btn{
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -46,27 +52,46 @@
             <span class="input-group-addon">
                 <span class="glyphicon glyphicon-education"></span>
             </span>
-            <input ng-model='sc.student.grade' type="text" class="form-control" name="studentGrade" id="studentGrade"
+            <input ng-model='sc.student.grade' type="number" class="form-control" name="studentGrade" id="studentGrade"
                    placeholder="Student Grade">
         </div>
-        <button type="button" class="btn btn-success" ng-click="sc.addClicked()">Add</button>
-        <button type="button" class="btn btn-default" ng-click="sc.cancelClicked()">Cancel</button>
+        <div id="add-cancel-btn">
+            <button type="button" class="btn btn-success" ng-click="sc.addClicked()">Add</button>
+            <button type="button" class="btn btn-default" ng-click="sc.cancelClicked()">Cancel</button>
+        </div>
+        <!--Search Bar-->
+        <div class="input-group form-group">
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-search"></span>
+            </span>
+            <input ng-model='searchWord' type="text" class="form-control" name="search" id="search" placeholder="Search">
+        </div>
+        <!--Search Bar End-->
     </div>
     <div class="student-list-container col-md-9 col-md-pull-3">
         <table class="student-list table">
             <thead>
             <tr>
-                <th class="clickable" ng-click="sc.setOrder('name')">Student Name <span class="glyphicon glyphicon-sort-by-alphabet"></span></th>
-                <th class="clickable" ng-click="sc.setOrder('course')">Student Course <span class="glyphicon glyphicon-sort-by-alphabet"></th>
-                <th class="clickable" ng-click="sc.setOrder('grade')">Student Grade <span class="glyphicon glyphicon-sort-by-order"></th>
+                <th class="clickable" ng-click="sc.setOrder('name')">Student Name
+                    <span class="glyphicon"
+                          ng-class="(sc.order==='name') ? 'glyphicon-sort-by-alphabet-alt':'glyphicon-sort-by-alphabet' "></span>
+                </th>
+                <th class="clickable" ng-click="sc.setOrder('course')">Student Course
+                    <span class="glyphicon"
+                          ng-class="(sc.order==='course') ? 'glyphicon-sort-by-alphabet-alt' :'glyphicon-sort-by-alphabet' "></span>
+                </th>
+                <th class="clickable" ng-click="sc.setOrder('grade')">Student Grade
+                    <span class="glyphicon"
+                          ng-class="(sc.order==='grade') ? 'glyphicon-sort-by-order-alt':'glyphicon-sort-by-order' "></span>
+                </th>
                 <th>Operations</th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="student in sc.studentList | orderBy: sc.order">
+            <tr ng-repeat="student in sc.studentList | orderBy: sc.order | filter: searchWord">
                 <td>{{ student.name }}</td>
                 <td>{{ student.course }}</td>
-                <td>{{ student.grade }}</td>
+                <td><span ng-class="sc.qualifyGrade(student.grade)">{{ student.grade }}</span></td>
                 <td><button ng-click="sc.deleteStudent(student)" class="btn btn-danger">Delete</button></td>
             </tr>
             </tbody>

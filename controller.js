@@ -1,114 +1,57 @@
 /**
  * Created by kevin on 11/13/16.
  */
-var app = angular.module('sgtApp', []);
+var app = angular.module('sgtApp', ["firebase"]);
 
-app.provider('studentData', function(){
-    var dataScope = this;
-    dataScope.apiUrl = '';
-    dataScope.apiKey = '';
-    dataScope.$get = function($http, $q, $log){
-        return {
-            getStudents: function(){
-                var defer = $q.defer();
-                $http({
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    method: 'POST',
-                    url: dataScope.apiUrl + 'get',
-                    dataType: 'JSON',
-                    data: $.param({api_key: dataScope.apiKey})
-                })
-                    .then(
-                        function(resp){
-                            $log.info('success');
-                            defer.resolve(resp);
-                        },
-                        function(err){
-                            $log.warn('error');
-                            defer.reject(err);
-                        });
-                return defer.promise;
-            },
-            addStudent: function(studentData){
-                var data = studentData;
-                data['api_key'] = dataScope.apiKey;
-                var defer = $q.defer();
-                $http({
-                    method: 'POST',
-                    url: dataScope.apiUrl + 'create',
-                    dataType: 'JSON',
-                    data: $.param(data),
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                })
-                    .then(
-                        function(resp){
-                            $log.info('success');
-                            defer.resolve(resp);
-                        },
-                        function(err){
-                            $log.warn('error');
-                            defer.reject(err);
-                        });
-                return defer.promise;
-            },
-            deleteStudent: function(studentID){
-                var data = {
-                    student_id: studentID,
-                    api_key: dataScope.apiKey
-                };
-                var defer = $q.defer();
-                $http({
-                    method: 'POST',
-                    url: dataScope.apiUrl + 'delete',
-                    dataType: 'JSON',
-                    data: $.param(data),
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                })
-                    .then(
-                        function(resp){
-                            $log.info('success');
-                            defer.resolve(resp);
-                        },
-                        function(err){
-                            $log.warn('error');
-                            defer.reject(err);
-                        });
-                return defer.promise;
-            },
-        }
+// Initialize Firebase
+var config = {
+    apiKey: "AIzaSyBUzvNLzTUym0KsWSkuZZVT--ZbkKnpS-c",
+    authDomain: "lfzintro.firebaseapp.com",
+    databaseURL: "https://lfzintro.firebaseio.com",
+    storageBucket: "lfzintro.appspot.com",
+    messagingSenderId: "684400452761"
+};
+firebase.initializeApp(config);
+
+app.filter('num', function() {
+    return function(input) {
+        return parseInt(input.grade, 10);
     };
 });
 
 
-app.controller('sgtController', function($log, studentData){
+app.controller('sgtController', function($log, $firebaseArray){
     var scScope = this;
     scScope.student = {};
     scScope.studentList = [];
     scScope.GPA = 0;
     scScope.order = null;
+
+    //Download students from Firebase as array
+    var studentsRef = firebase.database().ref().child("students");
+
     /**
      * Updates student list with list from DB
      */
     var getData = function() {
-        $log.log('In update');
-        studentData.getStudents()
-            .then(
-                function (response) {
-                    $log.info('Success: ', response);
-                    scScope.studentList = response.data.data;
-                    calculateGPA(scScope.studentList);
-                },
-                function (error) {
-                    $log.error('Failure: ', error);
-                });
+        scScope.studentList = $firebaseArray(studentsRef);
+        scScope.studentList.$loaded().then(
+            function(x){
+                $log.log(scScope.studentList);
+                calculateGPA(x);
+            }).catch(function(error){
+            $log.error("Failed to connect: ", error);
+        });
+        scScope.studentList.$watch(function(event){ calculateGPA(scScope.studentList)});
     };
     /**
      * calculate GPA for collective students
      * @param students [obj- list of student to calculate GPA
      */
     var calculateGPA = function(students){
+        //$log.log('Calculating:', students);
         var totalGrades = students.reduce(
-            (total, student) => {return total + student.grade;}, 0
+            (total, student) => { return total + parseInt(student.grade); }, 0
         );
         scScope.GPA = totalGrades/students.length;
     };
@@ -116,22 +59,15 @@ app.controller('sgtController', function($log, studentData){
      * add student to DB and update view
      */
     scScope.addClicked = function(){
-        //this.studentList.push(this.student);
-        //$log.log(this.studentList);
         scScope.student = {
             name: scScope.student.name,
             course: scScope.student.course,
             grade: scScope.student.grade
         };
-        studentData.addStudent(scScope. student).then(
-            function(resp){
-                $log.log(resp);
-                getData();
-            },
-            function(error){
-                $log.error('Could not add student: ', error);
-            });
-        //$log.log(scScope.student);
+        $log.log("Adding:", scScope.student);
+        //add to Firebase
+        $firebaseArray(studentsRef).$add(scScope.student);
+        //clear input fields
         scScope.student = {};
     };
     /**
@@ -145,19 +81,24 @@ app.controller('sgtController', function($log, studentData){
      * @param studentToRemove
      */
     scScope.deleteStudent = function (studentToRemove){
-        $log.log(studentToRemove);
-        studentData.deleteStudent(studentToRemove.id).then(
-            function(resp){
-                $log.log(resp);
-                getData();
-            },
-            function(err){
-                $log.error('Failed, err');
-            });
+        $log.log("Removing: " + studentToRemove.name);
+        scScope.studentList.$remove(scScope.studentList.indexOf(studentToRemove));
     };
 
     scScope.setOrder = function (orderBy) {
-        scScope.order = (scScope.order===orderBy)?'-'+orderBy:orderBy;
+        scScope.order = (scScope.order === orderBy) ? '-' + orderBy : orderBy;
+    };
+
+    scScope.qualifyGrade = function(grade){
+        if(grade < 60){
+            return "label label-danger";
+        }else if(grade >= 60 && grade < 70){
+            return "label label-warning";
+        }else if(grade >= 70 && grade < 90){
+            return "label label-info";
+        }else{
+            return "label label-success";
+        }
     };
     //initialize
     getData();
