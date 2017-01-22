@@ -13,12 +13,6 @@ var config = {
 };
 firebase.initializeApp(config);
 
-app.filter('num', function() {
-    return function(input) {
-        return parseInt(input.grade, 10);
-    };
-});
-
 
 app.controller('sgtController', function($log, $firebaseArray){
     var scScope = this;
@@ -37,7 +31,7 @@ app.controller('sgtController', function($log, $firebaseArray){
         scScope.studentList = $firebaseArray(studentsRef);
         scScope.studentList.$loaded().then(
             function(x){
-                $log.log(scScope.studentList);
+                //$log.log(scScope.studentList);
                 calculateGPA(x);
             }).catch(function(error){
             $log.error("Failed to connect: ", error);
@@ -64,7 +58,7 @@ app.controller('sgtController', function($log, $firebaseArray){
             course: scScope.student.course,
             grade: scScope.student.grade
         };
-        $log.log("Adding:", scScope.student);
+        //$log.log("Adding:", scScope.student);
         //add to Firebase
         $firebaseArray(studentsRef).$add(scScope.student);
         //clear input fields
@@ -81,7 +75,7 @@ app.controller('sgtController', function($log, $firebaseArray){
      * @param studentToRemove
      */
     scScope.deleteStudent = function (studentToRemove){
-        $log.log("Removing: " + studentToRemove.name);
+        //$log.log("Removing: " + studentToRemove.name);
         scScope.studentList.$remove(scScope.studentList.indexOf(studentToRemove));
     };
 
