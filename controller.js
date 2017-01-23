@@ -20,6 +20,7 @@ app.controller('sgtController', function($log, $firebaseArray){
     scScope.studentList = [];
     scScope.GPA = 0;
     scScope.order = null;
+    scScope.editEnabled = false;
 
     //Download students from Firebase as array
     var studentsRef = firebase.database().ref().child("students");
@@ -79,10 +80,22 @@ app.controller('sgtController', function($log, $firebaseArray){
         scScope.studentList.$remove(scScope.studentList.indexOf(studentToRemove));
     };
 
+    //applies filter depending on column clicked; if same column clicked, invert column
     scScope.setOrder = function (orderBy) {
         scScope.order = (scScope.order === orderBy) ? '-' + orderBy : orderBy;
     };
 
+    //saves current editable student and disable edit buttons
+    scScope.saveDefault = function(currentStudent){
+        scScope.editEnabled = true;
+    };
+
+    //update firebase with updated student info and enable buttons
+    scScope.updateStudent = function(){
+        scScope.editEnabled = false;
+    };
+
+    //color code grade
     scScope.qualifyGrade = function(grade){
         if(grade < 60){
             return "label label-danger";

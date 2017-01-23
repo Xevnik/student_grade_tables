@@ -22,7 +22,11 @@
         .error{
             border-color: red;
         }
+        .edit-btn{
+            /*margin-right: 1rem;*/
+        }
     </style>
+
 </head>
 <body>
 <div class="container" ng-controller="sgtController as sc">
@@ -57,14 +61,18 @@
                 <span class="glyphicon glyphicon-education"></span>
             </span>
             <input ng-model='sc.student.grade' type="number" class="form-control" name="studentGrade" id="studentGrade"
-                   placeholder="Student Grade"
+                   max="100" min="0" placeholder="Student Grade"
                    ng-class="(addStudentForm.studentGrade.$error.required  && !addStudentForm.studentGrade.$untouched) ? 'error': '' " required>
         </div>
+
+        <!--Add/Cancel Area-->
         <div id="add-cancel-btn">
             <button type="button" class="btn btn-success" ng-click="sc.addClicked(); addStudentForm.$setUntouched();" ng-disabled="addStudentForm.$invalid">
                 Add</button>
             <button type="button" class="btn btn-default" ng-click="sc.cancelClicked()">Cancel</button>
         </div>
+        <!--End Add/Cancel Area-->
+
         <!--Search Bar-->
         <div class="input-group form-group">
             <span class="input-group-addon">
@@ -75,30 +83,59 @@
         <!--Search Bar End-->
     </div>
     <div class="student-list-container col-md-9 col-md-pull-3">
-        <table class="student-list table">
+        <table class="student-list table table-hover">
             <thead>
             <tr>
-                <th class="clickable" ng-click="sc.setOrder('name')">Student Name
+                <th class="clickable" ng-click="sc.setOrder('name')">
+                    Student Name
                     <span class="glyphicon"
                           ng-class="(sc.order==='name') ? 'glyphicon-sort-by-alphabet-alt':'glyphicon-sort-by-alphabet' "></span>
                 </th>
-                <th class="clickable" ng-click="sc.setOrder('course')">Student Course
+                <!--End Student Name Head-->
+                <th class="clickable" ng-click="sc.setOrder('course')">
+                    Student Course
                     <span class="glyphicon"
                           ng-class="(sc.order==='course') ? 'glyphicon-sort-by-alphabet-alt' :'glyphicon-sort-by-alphabet' "></span>
                 </th>
-                <th class="clickable" ng-click="sc.setOrder('grade')">Student Grade
+                <!--End Student Course Head-->
+                <th class="clickable" ng-click="sc.setOrder('grade')">
+                    Student Grade
                     <span class="glyphicon"
                           ng-class="(sc.order==='grade') ? 'glyphicon-sort-by-order-alt':'glyphicon-sort-by-order' "></span>
                 </th>
-                <th>Operations</th>
+                <!--End Student Grade Head-->
+                <!--<th>Operations</th>-->
             </tr>
+            <!--End Row-->
             </thead>
             <tbody>
             <tr ng-repeat="student in sc.studentList | orderBy: sc.order | filter: searchWord">
-                <td>{{ student.name }}</td>
-                <td>{{ student.course }}</td>
-                <td><span ng-class="sc.qualifyGrade(student.grade)">{{ student.grade }}</span></td>
-                <td><button ng-click="sc.deleteStudent(student)" class="btn btn-danger">Delete</button></td>
+                <td class="col-md-3 col-sm-3">
+                    <span ng-hide="editing">{{ student.name }}</span>
+                    <span ng-show="editing"><input class="col-xs-10" type="text" ng-model="student.name"></span>
+                </td>
+                <!--name end-->
+                <td class="col-md-3 col-sm-3">
+                    <span ng-hide="editing">{{ student.course }}</span>
+                    <span ng-show="editing"><input class="col-xs-10" type="text" ng-model="student.course"></span>
+                </td>
+                <!--course end-->
+                <td class="col-md-3 col-sm-3">
+                    <span ng-hide="editing" ng-class="sc.qualifyGrade(student.grade)">{{ student.grade }}</span>
+                    <span ng-show="editing"><input class="col-xs-10" type="number" ng-model="student.grade"></span>
+                </td>
+                <!--grade end-->
+                <td class="col-md-3">
+                    <button ng-click="editing = true; sc.saveDefault(student);" ng-disabled="sc.editEnabled" ng-hide="editing" class="btn btn-primary btn-sm edit-btn" data-toggle="tooltip" title="edit">
+                        <span class="glyphicon glyphicon-edit"></span>
+                    </button>
+                    <button ng-click="editing = false; sc.updateStudent();" ng-show="editing" class="btn btn-success btn-sm" data-toggle="tooltip" title="save">
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </button>
+                    <button ng-click="sc.deleteStudent(student)" class="btn btn-danger btn-sm" data-toggle="tooltip" title="delete">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                </td>
             </tr>
             </tbody>
         </table>
