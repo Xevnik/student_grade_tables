@@ -87,7 +87,7 @@ app.controller('sgtController', function($log, $firebaseArray){
 
     //saves current editable student and disable edit buttons
     scScope.saveDefault = function(stuToEdit){
-        $log.log(stuToEdit);
+        //$log.log(stuToEdit);
         scScope.editEnabled = true;
         //To autopopulate input on edit
         scScope.updateData = {
