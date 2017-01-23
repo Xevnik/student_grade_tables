@@ -20,7 +20,8 @@ app.controller('sgtController', function($log, $firebaseArray){
     scScope.studentList = [];
     scScope.GPA = 0;
     scScope.order = null;
-
+    scScope.editEnabled = false;
+    scScope.updateData = {};
     //Download students from Firebase as array
     var studentsRef = firebase.database().ref().child("students");
 
@@ -79,10 +80,38 @@ app.controller('sgtController', function($log, $firebaseArray){
         scScope.studentList.$remove(scScope.studentList.indexOf(studentToRemove));
     };
 
+    //applies filter depending on column clicked; if same column clicked, invert column
     scScope.setOrder = function (orderBy) {
         scScope.order = (scScope.order === orderBy) ? '-' + orderBy : orderBy;
     };
 
+    //saves current editable student and disable edit buttons
+    scScope.saveDefault = function(stuToEdit){
+        //$log.log(stuToEdit);
+        scScope.editEnabled = true;
+        //To autopopulate input on edit
+        scScope.updateData = {
+            name: stuToEdit.name,
+            course: stuToEdit.course,
+            grade: stuToEdit.grade
+        };
+    };
+
+    //update firebase with updated student info and enable buttons
+    scScope.updateStudent = function(dataToUpdate){
+        var stu_index = scScope.studentList.indexOf(dataToUpdate);
+        scScope.studentList[stu_index] = {
+            $id: dataToUpdate.$id,
+            name: scScope.updateData.name || dataToUpdate.name,
+            course:scScope.updateData.course || dataToUpdate.course,
+            grade: scScope.updateData.grade || dataToUpdate.grade
+        };
+
+        scScope.studentList.$save(stu_index);
+        scScope.editEnabled = false;
+    };
+
+    //color code grade
     scScope.qualifyGrade = function(grade){
         if(grade < 60){
             return "label label-danger";
