@@ -112,30 +112,31 @@
             <tr ng-repeat="student in sc.studentList | orderBy: sc.order | filter: searchWord">
                 <td class="col-md-3 col-sm-3">
                     <span ng-hide="editing">{{ student.name }}</span>
-                    <span ng-show="editing"><input class="col-xs-10" type="text" ng-model="student.name"></span>
+                    <span ng-show="editing"><input class="col-xs-10" type="text" ng-model="sc.updateData.name"></span>
                 </td>
                 <!--name end-->
                 <td class="col-md-3 col-sm-3">
                     <span ng-hide="editing">{{ student.course }}</span>
-                    <span ng-show="editing"><input class="col-xs-10" type="text" ng-model="student.course"></span>
+                    <span ng-show="editing"><input class="col-xs-10" type="text" ng-model="sc.updateData.course"></span>
                 </td>
                 <!--course end-->
                 <td class="col-md-3 col-sm-3">
                     <span ng-hide="editing" ng-class="sc.qualifyGrade(student.grade)">{{ student.grade }}</span>
-                    <span ng-show="editing"><input class="col-xs-10" type="number" ng-model="student.grade"></span>
+                    <span ng-show="editing"><input class="col-xs-10" type="number" ng-model="sc.updateData.grade"></span>
                 </td>
                 <!--grade end-->
                 <td class="col-md-3">
                     <button ng-click="editing = true; sc.saveDefault(student);" ng-disabled="sc.editEnabled" ng-hide="editing" class="btn btn-primary btn-sm edit-btn" data-toggle="tooltip" title="edit">
                         <span class="glyphicon glyphicon-edit"></span>
                     </button>
-                    <button ng-click="editing = false; sc.updateStudent();" ng-show="editing" class="btn btn-success btn-sm" data-toggle="tooltip" title="save">
+                    <button ng-click="editing = false; sc.updateStudent(student);" ng-show="editing" class="btn btn-success btn-sm" data-toggle="tooltip" title="save">
                         <span class="glyphicon glyphicon-ok"></span>
                     </button>
                     <button ng-click="sc.deleteStudent(student)" class="btn btn-danger btn-sm" data-toggle="tooltip" title="delete">
                         <span class="glyphicon glyphicon-trash"></span>
                     </button>
                 </td>
+
             </tr>
             </tbody>
         </table>

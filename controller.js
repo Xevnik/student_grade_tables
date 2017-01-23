@@ -21,7 +21,7 @@ app.controller('sgtController', function($log, $firebaseArray){
     scScope.GPA = 0;
     scScope.order = null;
     scScope.editEnabled = false;
-
+    scScope.updateData = {};
     //Download students from Firebase as array
     var studentsRef = firebase.database().ref().child("students");
 
@@ -86,12 +86,28 @@ app.controller('sgtController', function($log, $firebaseArray){
     };
 
     //saves current editable student and disable edit buttons
-    scScope.saveDefault = function(currentStudent){
+    scScope.saveDefault = function(stuToEdit){
+        $log.log(stuToEdit);
         scScope.editEnabled = true;
+        //To autopopulate input on edit
+        scScope.updateData = {
+            name: stuToEdit.name,
+            course: stuToEdit.course,
+            grade: stuToEdit.grade
+        };
     };
 
     //update firebase with updated student info and enable buttons
-    scScope.updateStudent = function(){
+    scScope.updateStudent = function(dataToUpdate){
+        var stu_index = scScope.studentList.indexOf(dataToUpdate);
+        scScope.studentList[stu_index] = {
+            $id: dataToUpdate.$id,
+            name: scScope.updateData.name || dataToUpdate.name,
+            course:scScope.updateData.course || dataToUpdate.course,
+            grade: scScope.updateData.grade || dataToUpdate.grade
+        };
+
+        scScope.studentList.$save(stu_index);
         scScope.editEnabled = false;
     };
 
