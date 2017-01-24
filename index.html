@@ -132,7 +132,7 @@
                     <button ng-click="editing = false; sc.updateStudent(student);" ng-show="editing" class="btn btn-success btn-sm" data-toggle="tooltip" title="save">
                         <span class="glyphicon glyphicon-ok"></span>
                     </button>
-                    <button ng-click="sc.deleteStudent(student)" class="btn btn-danger btn-sm" data-toggle="tooltip" title="delete">
+                    <button ng-click="sc.deleteStudent(student)" ng-disabled="sc.editEnabled" class="btn btn-danger btn-sm" data-toggle="tooltip" title="delete">
                         <span class="glyphicon glyphicon-trash"></span>
                     </button>
                 </td>
