@@ -19,6 +19,5 @@ Version 2.0 adds more CRUD functionality. Create and delete functionality is now
 ##Version Angular 
 ####Description
 This version aims to convert this application to use Angular controller and services to provide function to the table. 
-- Using AngularFire to provide database functionality.
-- To do: separate into service
-
+- Uses AngularFire to provide database store students.
+- Can update student information inline and in database.
