@@ -16,8 +16,10 @@ Version 1.0 picks up where 0.5 left off. Using a provided API database, the tabl
 #### Description
 Version 2.0 adds more CRUD functionality. Create and delete functionality is now added so any student added or deleted persists across sessions rather than reseting to its initial state upon page load.
 
-##Version Angular 
+##Version Angular (master)
 ####Description
 This version aims to convert this application to use Angular controller and services to provide function to the table. 
 - Uses AngularFire to provide database store students.
 - Can update student information inline and in database.
+#####Todo:
+1. fix input to see more text for mobile.
