@@ -1,4 +1,6 @@
 # SGT - Student Grade Table
+##### Description
+A create, read, update and delete application for tracking students, students' courses and grades that began using core JavaScript and jQuery, but is now converted to Angular with Firebase.
 
 ## Version 0.1
 #### Description
