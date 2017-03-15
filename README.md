@@ -1,4 +1,5 @@
-# SGT - Student Grade Table
+# Student Grade Table 
+### [Live](https://ckevincode.com/sgt)
 ##### Description
 A create, read, update and delete application for tracking students, students' courses and grades that began using core JavaScript and jQuery, but is now converted to Angular with Firebase.
 
@@ -23,6 +24,3 @@ Version 2.0 adds more CRUD functionality. Create and delete functionality is now
 This version aims to convert this application to use Angular controller and services to provide function to the table. 
 - Uses AngularFire to provide database store students.
 - Can update student information inline and in database.
-
-#####Todo:
-1. fix input to see more text for mobile.
